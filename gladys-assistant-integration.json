@@ -8,8 +8,8 @@
     "de": "Logitech Harmony Hub im lokalen Netzwerk: Aktivitäten, Fernbedienungsbefehle, Szenen.",
     "es": "Logitech Harmony Hub en la red local: actividades, comandos del mando, escenas."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/guim31/gladys-harmony:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/guim31/gladys-harmony:1.0.1",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/guim31/gladys-harmony/main/cover.png",
   "categories": ["multimedia"],

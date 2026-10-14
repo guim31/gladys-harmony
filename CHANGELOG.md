@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-14
+
 ### Added
 
 - Logitech Harmony Hub over the local network (WebSocket API, port 8088): no
@@ -32,4 +34,5 @@ the notes of the version's GitHub Release.
 - "Search for hubs" button in the Configuration screen.
 - English, French, German and Spanish texts and documentation.
 
-[Unreleased]: https://github.com/guim31/gladys-harmony/commits/main
+[Unreleased]: https://github.com/guim31/gladys-harmony/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/guim31/gladys-harmony/releases/tag/v1.0.1

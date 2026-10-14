@@ -1,6 +1,6 @@
 {
   "name": "gladys-harmony",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Gladys Assistant integration for the Logitech Harmony Hub, over the local network.",
   "type": "module",
