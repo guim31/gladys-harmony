@@ -1,67 +1,192 @@
-# Template de démonstration
+# Logitech Harmony Hub
 
-Ceci est la documentation utilisateur de l'intégration. Gladys ré-héberge ce
-fichier et affiche un lien **Documentation** permanent vers lui dans l'écran
-de configuration (dans la langue de l'utilisateur, avec l'anglais en repli) —
-c'est au moment de configurer que l'utilisateur en a le plus besoin. Gardez
-les courtes indications d'accueil dans les blocs `section` du `config_schema`
-du manifest ; mettez ici le pas-à-pas détaillé (captures d'écran, dépannage…).
+Pilotez votre Logitech Harmony Hub depuis Gladys, en réseau local : lancez une
+activité (« Regarder la TV », « Écouter de la musique »), éteignez tout,
+envoyez n'importe quelle touche de télécommande aux appareils que le hub
+pilote (TV, ampli, lecteur multimédia…), et lancez des scènes quand une
+activité démarre — tamisez la lumière quand « Regarder un film » démarre, que
+ce soit depuis la télécommande Harmony, l'application ou Gladys.
 
-## Ce que vous obtenez
+Développée sans le matériel : vos retours sont bienvenus. Cette intégration
+n'a aucun lien avec Logitech ; Harmony est une marque de Logitech.
 
-Six appareils de démonstration apparaissent après l'installation : une
-station météo (vraies données Open-Meteo), un interrupteur, une lampe
-variable, une prise connectée avec mesure de puissance, un détecteur de
-mouvement et une caméra.
+## Prérequis
+
+- Un Logitech Harmony Hub (seul, ou le hub d'une Harmony Companion, Elite, Pro
+  ou Smart Control), configuré avec l'application Harmony, sur le même réseau
+  local que Gladys.
+- Gladys 5.1 ou plus récent.
+- Idéalement, une adresse fixe pour le hub dans votre box (réservation DHCP) :
+  l'intégration suit un hub qui change d'adresse, mais une adresse fixe fait
+  revenir la liaison plus vite.
+
+Aucun compte Logitech, mot de passe ni accès au cloud n'est nécessaire :
+l'intégration parle directement au hub, sur son port local 8088 (l'API
+WebSocket qu'utilise l'application Harmony). L'ancienne API XMPP, désactivée
+par défaut sur les micrologiciels récents, n'est pas utilisée.
 
 ## Configuration
 
-1. Ouvrez l'onglet **Configuration** de l'intégration.
-2. Renseignez la **latitude** et la **longitude** que la station météo de
-   démonstration doit observer (Paris par défaut), et choisissez votre unité
-   de température. L'**intervalle de rafraîchissement** règle la fréquence
-   de lecture de la station météo et de la puissance de la prise : toutes
-   les 5 minutes par défaut, toutes les minutes au plus.
-3. Enregistrez : les appareils apparaissent dans l'onglet **Découverte**,
-   prêts à être ajoutés.
+1. Installez l'intégration (Intégrations → Installer depuis GitHub).
+2. Ouvrez son onglet **Configuration**. Les hubs du réseau local sont
+   recherchés automatiquement (SSDP, relayé par Gladys). Si le vôtre n'est pas
+   trouvé, saisissez son adresse IP dans **Adresses IP des hubs** (plusieurs
+   hubs : séparez-les par des virgules). L'application Harmony l'affiche dans
+   Menu → Configuration Harmony → Ajouter/modifier des appareils et activités →
+   Hub → Informations réseau ; votre box la liste aussi.
+3. **Langue** fixe les noms donnés aux fonctionnalités des nouveaux appareils,
+   le nom du choix « Éteint » et la langue des messages d'erreur (français par
+   défaut).
+4. **Rechercher les hubs** lance une recherche et liste les hubs trouvés, avec
+   leur adresse, leur nombre d'activités et d'appareils, et s'ils répondent.
+5. Ouvrez l'onglet **Découverte** et ajoutez les appareils voulus (voir
+   ci-dessous).
 
-Le réglage **Préférer la connexion locale** pilote la prise de
-démonstration : elle affiche en badge le canal réellement utilisé (local ou
-cloud), avec un point orange quand elle fonctionne en mode dégradé (local
-refusé, bascule cloud).
+## Les appareils
 
-## Actions
+Chaque hub donne trois sortes d'appareils, ajoutés un par un depuis l'onglet
+Découverte. Leur nom commence par celui du hub, par exemple « Harmony Living
+Room · Watch TV ».
 
-- **Tester le fournisseur météo** — effectue une requête en direct vers
-  Open-Meteo et affiche la température et l'humidité actuelles sous le
-  bouton.
-- **Identifier un appareil** — choisissez un de vos appareils dans la liste
-  et il se signale (la lampe de démonstration « clignote » dans les logs).
+### Le hub
+
+- **Activité en cours** : le nom de l'activité lancée, ou « Éteint ».
+- **Activité** : la liste des activités du hub, plus « Éteint ». En choisir une
+  la lance (ou éteint tout). Dans une scène, l'action « Contrôler un appareil »
+  du cœur propose la même liste.
+
+### Les activités
+
+Un appareil par activité, avec un seul interrupteur, **En cours** : allumé
+tant que l'activité tourne. L'allumer lance l'activité ; l'éteindre éteint
+tout (si cette activité tournait). Comme ce sont des appareils, les activités
+se choisissent dans des listes dans les déclencheurs et les actions de scène
+et dans les réglages du widget.
+
+### Les appareils pilotés par le hub
+
+Un appareil par appareil piloté par le hub (TV, ampli, Apple TV…) :
+
+- **Commande** : la liste de toutes les commandes que le hub connaît pour cet
+  appareil (entrées, modes sonores, touches de couleur…). En choisir une
+  l'envoie.
+- Des boutons poussoirs pour les touches usuelles que l'appareil possède :
+  volume plus et moins, muet, chaînes, flèches et OK, menu, guide, info,
+  retour, quitter, lecture, pause, stop, retour et avance rapides, précédent,
+  suivant, enregistrer.
+
+Les commandes sont celles de la configuration du hub : modifiez-les dans
+l'application Harmony, l'intégration relit la nouvelle configuration d'elle-même.
+
+## Temps réel
+
+Le hub prévient l'intégration tout de suite quand une activité démarre ou
+quand tout s'éteint, quelle qu'en soit l'origine : les états changent dans
+Gladys en moins d'une seconde. En plus, l'intégration lit l'activité en cours
+toutes les 30 secondes (une notification manquée, une connexion perdue), et
+renvoie les états inchangés toutes les 6 heures pour que Gladys ne les affiche
+jamais comme périmés. Le planificateur de Gladys n'est pas nécessaire.
+
+Quand le hub ne répond plus, ses appareils portent la pastille « injoignable »
+et l'intégration se reconnecte d'elle-même, de plus en plus lentement (jusqu'à
+une fois par minute).
+
+## Utilisation du réseau
+
+Tout reste sur le réseau local : aucun serveur Logitech n'est contacté.
+L'intégration garde une connexion ouverte par hub et lui envoie une petite
+requête toutes les 30 secondes, plus une par commande ; la configuration est
+lue quand elle change. Une recherche (au démarrage, toutes les 15 minutes et
+avec le bouton) envoie une requête SSDP par Gladys et demande à chaque adresse
+trouvée si c'est un hub.
 
 ## Scènes
 
-L'intégration ajoute ses propres cartes à l'éditeur de scènes (Gladys 5.1
-ou plus récent), dans la catégorie **Intégrations** :
+### Déclencheurs
 
-- **Mouvement détecté** (déclencheur) — lance la scène quand un détecteur
-  de démonstration voit bouger quelque chose. Choisissez éventuellement le
-  détecteur et ce qui a bougé (personne, animal) ; laissés vides, toute
-  détection correspond. Les actions suivantes peuvent lire ce qui a bougé
-  avec `{{triggerEvent.data.target}}`.
-- **Identifier un appareil** (action) — fait se signaler l'appareil choisi.
-  Elle indique si l'appareil a pu se signaler, pour que les actions
-  suivantes puissent en dépendre.
+- **Activité Harmony lancée** : une activité démarre, depuis la télécommande,
+  l'application ou Gladys. Filtres (facultatifs) : l'activité, le hub.
+  Informations transmises aux actions : l'activité, l'activité précédente, le
+  hub.
+- **Harmony a tout éteint** : le hub éteint tout. Filtre (facultatif) : le hub.
+  Informations : l'activité précédente, le hub.
 
-## Tableau de bord
+Ils se déclenchent quand le hub signale le changement alors qu'il est
+connecté : un changement fait pendant une coupure met à jour les états au
+retour, sans lancer de scène. Si les activités changent plus de six fois en
+une minute (deux scènes qui lancent l'activité l'une de l'autre), les
+déclencheurs se mettent en pause une minute.
 
-Ajoutez le widget **État de la démo** à un tableau de bord : il affiche en
-direct la température de la station météo et la puissance de la prise du
-bureau, la connexion utilisée par la prise (en orange si dégradée) et la
-position observée. Son bouton **Identifier la lampe** fait se signaler la
-lampe de démonstration.
+### Actions
+
+- **Lancer une activité Harmony** : choisissez l'appareil activité ; l'action
+  attend que le hub ait allumé chaque appareil (jusqu'à 90 secondes).
+- **Tout éteindre (Harmony)** : choisissez le hub, ou n'importe lequel de ses
+  appareils.
+- **Envoyer une commande Harmony** : choisissez l'appareil, puis une commande
+  dans la liste des usuelles, ou saisissez le nom de n'importe quelle autre
+  dans **Autre commande** (son nom ou son libellé, comme dans la liste
+  Commande de l'appareil, par exemple `InputHdmi1`). **Répétitions** l'envoie
+  plusieurs fois, avec **Délai entre répétitions** (en millisecondes) entre
+  deux.
+
+### Idées de scènes
+
+- Déclencheur « Activité Harmony lancée », activité « Regarder un film » →
+  baisser les lumières du salon à 20 %, fermer les volets.
+- Déclencheur « Harmony a tout éteint » → rallumer les lumières du salon.
+- Chaque nuit à 1 h → action « Tout éteindre (Harmony) » (rien n'est envoyé
+  quand tout est déjà éteint).
+- La sonnette retentit → action « Envoyer une commande Harmony », appareil
+  « Denon AV Receiver », commande « Muet ».
+
+## Widget du tableau de bord
+
+**Télécommande Harmony** affiche l'activité en cours, un bouton pour jusqu'à
+trois activités favorites (les premières du hub si aucune n'est choisie dans
+ses réglages) et un bouton **Éteindre**. L'activité en cours porte une coche.
+Un appui répond dès que le hub a accepté l'ordre ; le widget suit le
+changement. Avec plusieurs hubs, choisissez-en un dans les réglages du widget.
 
 ## Dépannage
 
-L'intégration journalise tout ce qu'elle fait : consultez les logs de
-l'intégration depuis l'interface Gladys (ou `docker logs` sur l'hôte) avec
-`LOG_LEVEL=debug` pour le détail complet.
+- **Aucun hub trouvé** : vérifiez que le hub est sur le même réseau que Gladys
+  et saisissez son adresse IP dans la configuration. La recherche par Gladys
+  demande un Gladys qui relaie le SSDP ; les adresses saisies marchent
+  toujours.
+- **« Aucun hub ne répond à… »** : l'adresse ne répond pas sur le port 8088.
+  Vérifiez l'adresse, et que le hub est alimenté (son voyant).
+- **Le hub est injoignable** : l'intégration continue d'essayer ; vérifiez le
+  Wi-Fi du hub. Un hub qui a changé d'adresse est retrouvé par la recherche
+  suivante (toutes les 15 minutes, ou avec le bouton **Rechercher les hubs**).
+- **Une commande ne fait rien** : le hub l'a envoyée en infrarouge ; vérifiez
+  que rien ne se trouve entre le hub (ou son émetteur IR) et l'appareil, et que
+  la commande marche depuis l'application Harmony.
+- **Une nouvelle activité manque** : elle apparaît dans l'onglet Découverte
+  une fois que le hub s'est synchronisé avec l'application Harmony (une minute
+  environ).
+- Plus de détails : réglez la variable d'environnement `LOG_LEVEL` sur `debug`
+  et lisez les journaux de l'intégration.
+
+## Limites
+
+- Développée sans le matériel : le protocole suit aioharmony, la bibliothèque
+  de l'intégration Home Assistant, mais cette intégration n'a pas encore été
+  essayée sur un vrai hub. Dites-nous ce qui marche et ce qui ne marche pas.
+- L'action de scène « Envoyer une commande Harmony » propose les commandes
+  usuelles dans une liste ; les autres se saisissent. La liste complète d'un
+  appareil est sa fonctionnalité **Commande** (action « Contrôler un
+  appareil » du cœur).
+- Choisir deux fois de suite la même commande dans la liste **Commande** du
+  tableau de bord ne fait rien la seconde fois (la liste garde son choix) :
+  utilisez les boutons poussoirs, le widget ou une scène pour répéter une
+  touche.
+- Une touche est appuyée puis relâchée aussitôt : pas d'appui long.
+- Le hub ne connaît que ce qu'il a envoyé : l'état de la TV ou de l'ampli
+  eux-mêmes (allumé, volume, entrée) n'est pas connu, seulement l'activité en
+  cours.
+- Les « Séquences » Harmony, les lampes Hue et les objets connectés appairés
+  au hub ne sont pas exposés.
+- Logitech ne vend ni ne fait plus évoluer les produits Harmony ; une mise à
+  jour du micrologiciel qui fermerait l'API locale arrêterait cette
+  intégration.

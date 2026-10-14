@@ -1,61 +1,174 @@
-# Demo Devices Template
+# Logitech Harmony Hub
 
-This is the user documentation of the integration. Gladys re-hosts this file
-and shows a permanent **Documentation** link to it in the Configuration screen
-(in the user's language, with English as the fallback) — it is when
-configuring that the user needs it most. Keep the short onboarding hints in
-the `section` blocks of the manifest `config_schema`; put the long
-step-by-step (screenshots, troubleshooting…) here.
+Control your Logitech Harmony Hub from Gladys, over the local network: start an
+activity ("Watch TV", "Listen to Music"), turn everything off, send any remote
+key to the devices the hub drives (TV, amplifier, media player…), and start
+scenes when an activity starts — dim the lights when "Watch a Movie" starts,
+whether it was started from the Harmony remote, the app or Gladys.
 
-## What you get
+Developed without the hardware: feedback welcome. This integration is
+not affiliated with Logitech; Harmony is a trademark of Logitech.
 
-Six demo devices show up after installation: a weather station (real data
-from Open-Meteo), a switch, a dimmable light, a smart plug with power
-metering, a motion sensor and a camera.
+## What you need
+
+- A Logitech Harmony Hub (alone, or the hub of a Harmony Companion, Elite, Pro
+  or Smart Control), set up with the Harmony app, on the same local network as
+  Gladys.
+- Gladys 5.1 or later.
+- Ideally, a fixed address for the hub in your router (DHCP reservation): the
+  integration follows a hub that changes address, but a fixed one makes the
+  link faster to come back.
+
+No Logitech account, password or cloud access is needed: the integration talks
+to the hub directly, on its local port 8088 (the WebSocket API the Harmony app
+uses). The old XMPP API, disabled by default on recent firmwares, is not used.
 
 ## Configuration
 
-1. Open the **Configuration** tab of the integration.
-2. Set the **latitude** and **longitude** the demo weather station should
-   observe (they default to Paris), and pick your temperature unit.
-   The **refresh interval** sets how often the weather station and the
-   plug's power are read: every 5 minutes by default, every minute at most.
-3. Save: the devices appear in the **Discovery** tab, ready to be added.
+1. Install the integration (Integrations → Install from GitHub).
+2. Open its **Configuration** tab. The hubs of the local network are searched
+   automatically (SSDP, relayed by Gladys). If yours is not found, enter its IP
+   address in **Hub IP addresses** (several hubs: separate them with commas).
+   The Harmony app shows it under Menu → Harmony Setup → Add/Edit Devices &
+   Activities → Hub → Network Info; your router lists it too.
+3. **Language** sets the names given to the features of new devices, the name
+   of the "Off" choice and the language of the error messages (French by
+   default).
+4. **Search for hubs** runs a search and lists the hubs found, with their
+   address, their number of activities and devices, and whether they answer.
+5. Open the **Discover** tab and add the devices you want (see below).
 
-The **Prefer the local connection** toggle drives the demo plug: it reports
-the channel it actually uses as a badge (local or cloud), with an orange dot
-when it runs degraded (local refused, cloud fallback).
+## The devices
 
-## Actions
+Each hub gives three kinds of devices, added one by one from the Discover tab.
+Their names start with the hub name, e.g. "Harmony Living Room · Watch TV".
 
-- **Test the weather provider** — performs a live request to Open-Meteo and
-  shows the current temperature and humidity under the button.
-- **Identify a device** — pick one of your devices in the list and it will
-  signal itself (the demo light "blinks" in the logs).
+### The hub
+
+- **Current activity**: the name of the running activity, or "Off".
+- **Activity**: a list of the hub's activities, plus "Off". Choosing one starts
+  it (or turns everything off). In a scene, the core action "Set device value"
+  offers the same list.
+
+### The activities
+
+One device per activity, with a single switch, **Running**: on while the
+activity runs. Turning it on starts the activity; turning it off turns
+everything off (when that activity was running). Being devices, the activities
+can be picked from lists in the scene triggers, the scene actions and the
+widget settings.
+
+### The devices driven by the hub
+
+One device per appliance the hub drives (TV, amplifier, Apple TV…):
+
+- **Command**: the list of every command the hub knows for the appliance
+  (inputs, sound modes, colored buttons…). Choosing one sends it.
+- Push buttons for the usual remote keys the appliance has: volume up and down,
+  mute, channels, arrows and OK, menu, guide, info, back, exit, play, pause,
+  stop, rewind, fast forward, previous, next, record.
+
+The commands are the ones of the hub configuration: change them in the Harmony
+app, and the integration reads the new configuration by itself.
+
+## Real time
+
+The hub tells the integration right away when an activity starts or when
+everything turns off, whatever started it: the states change in Gladys within a
+second. On top of that, the integration reads the current activity every 30
+seconds (a missed notification, a lost connection), and sends the unchanged
+states again every 6 hours so Gladys never shows them as stale. Gladys' own
+scheduler is not needed.
+
+When the hub stops answering, its devices show the "unreachable" badge and the
+integration reconnects by itself, more and more slowly (up to once a minute).
+
+## Network use
+
+Everything stays on the local network: no Logitech server is contacted. The
+integration keeps one connection open per hub and sends it one small request
+every 30 seconds, plus one per command; the configuration is read when it
+changes. A search (at startup, every 15 minutes, and with the button) sends one
+SSDP request through Gladys and asks each address found whether it is a hub.
 
 ## Scenes
 
-The integration adds its own cards to the scene editor (Gladys 5.1 or
-later), under the **Integrations** category:
+### Triggers
 
-- **Motion detected** (trigger) — starts the scene when a demo motion sensor
-  sees something move. Optionally pick the sensor and what moved (person,
-  animal); left empty, any detection matches. The following actions can
-  read what moved with `{{triggerEvent.data.target}}`.
-- **Identify a device** (action) — makes the chosen device signal itself.
-  It returns whether the device could signal itself, so the following
-  actions can depend on it.
+- **Harmony activity started**: an activity starts, from the remote, the app or
+  Gladys. Filters (optional): the activity, the hub. Information passed on to
+  the actions: the activity, the previous activity, the hub.
+- **Harmony turned everything off**: the hub turns everything off. Filter
+  (optional): the hub. Information: the previous activity, the hub.
 
-## Dashboard
+They fire when the hub reports the change while connected: a change made while
+the connection was down updates the states when it is back, without starting
+scenes. If activities change more than six times in a minute (two scenes
+starting each other's activity), the triggers pause for a minute.
 
-Add the **Demo status** widget to a dashboard: it shows the live
-temperature of the weather station and the power of the office plug, the
-connection the plug currently uses (orange when degraded) and the observed
-location. Its **Identify the light** button makes the demo light signal
-itself.
+### Actions
+
+- **Start a Harmony activity**: choose the activity device; the action waits
+  for the hub to switch every device on (up to 90 seconds).
+- **Turn everything off (Harmony)**: choose the hub, or any of its devices.
+- **Send a Harmony command**: choose the device, then a command from the list
+  of usual ones, or type the name of any other one in **Other command** (its
+  name or its label, as in the device's Command list, e.g. `InputHdmi1`).
+  **Repeat** sends it several times, with **Delay between repeats** (in
+  milliseconds) between two.
+
+### Scene ideas
+
+- Trigger "Harmony activity started", activity "Watch a Movie" → dim the living
+  room lights to 20%, close the shutters.
+- Trigger "Harmony turned everything off" → turn the living room lights back
+  on.
+- Every night at 1 a.m. → action "Turn everything off (Harmony)" (nothing is
+  sent when everything is already off).
+- The doorbell rings → action "Send a Harmony command", device "Denon AV
+  Receiver", command "Mute".
+
+## Dashboard widget
+
+**Harmony remote** shows the current activity, a button for up to three
+favourite activities (the first ones of the hub when none is chosen in its
+settings) and an **Off** button. The running activity carries a check mark.
+A tap answers as soon as the hub accepted the order; the widget follows the
+change. With several hubs, choose one in the widget settings.
 
 ## Troubleshooting
 
-The integration logs everything it does: check the integration logs from the
-Gladys UI (or `docker logs` on the host) with `LOG_LEVEL=debug` for the full
-detail.
+- **No hub found**: check that the hub is on the same network as Gladys and
+  enter its IP address in the configuration. The search through Gladys needs
+  a Gladys that relays SSDP; typed addresses always work.
+- **"No hub answers at…"**: the address does not answer on port 8088. Check the
+  address, and that the hub is powered (its light).
+- **The hub is unreachable**: the integration keeps trying; check the hub's
+  Wi-Fi. A hub that changed address is found again by the next search (every
+  15 minutes, or with the **Search for hubs** button).
+- **A command does nothing**: the hub sent it in infrared; check that nothing
+  stands between the hub (or its IR blaster) and the appliance, and that the
+  command works from the Harmony app.
+- **A new activity is missing**: it appears in the Discover tab once the hub
+  has synchronized with the Harmony app (a minute or so).
+- More details: set the `LOG_LEVEL` environment variable to `debug` and read the
+  integration logs.
+
+## Limits
+
+- Developed without the hardware: the protocol follows aioharmony, the library
+  of the Home Assistant integration, but this integration was not tested on a
+  real hub yet. Please report what works and what does not.
+- The scene action "Send a Harmony command" offers the usual commands in a list;
+  the others are typed. The full list of an appliance is its **Command**
+  feature (core action "Set device value").
+- Choosing the same command twice in a row from the **Command** list of the
+  dashboard does nothing the second time (the list keeps its choice): use the
+  push buttons, the widget or a scene for repeated keys.
+- A key is pressed and released at once: no long press.
+- The hub only knows what it sent: the states of the TV or the amplifier
+  themselves (on, volume, input) are not known, only the running activity.
+- Harmony "Sequences", the Hue lights and the smart home devices paired with
+  the hub are not exposed.
+- Logitech no longer sells or develops Harmony products; a firmware update that
+  closes the local API would stop this integration.

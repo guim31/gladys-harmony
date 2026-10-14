@@ -31,16 +31,27 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
+index.js                          SDK wiring only: registerHandlers() then connect()
+src/app.js                        every SDK handler -> manager; "search" configuration action
+src/manager.js                    hubs: search, live links, states, scene events, commands, /data
+src/harmony/protocol.js           wire values of the hub (commands, notifications, quirks)
+src/harmony/client.js             provisioning POST + WebSocket client (requests by id, reconnection)
+src/harmony/model.js              reading get_config: activities, devices, commands
+src/devices.js                    Gladys devices (hub, activities, appliances), names in 4 languages
+src/discovery.js                  SSDP answers relayed by the core
 src/scenes.js                     scene action handlers (manifest `scene_actions`)
 src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/messages.js                   texts sent from the container (en, fr, de, es)
+src/store.js                      /data/harmony-state.json (atomic, coalesced writes)
+src/issues.js                     repeated failures logged once when they start, once when they end
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
-gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
+scripts/probe.mjs                 read-only check against a real hub (and its SSDP answer)
+scripts/fake-hub.mjs              simulated hub on 127.0.0.1:8088, to try the real client by hand
+gladys-assistant-integration.json manifest: name, config_schema, actions, scenes, widget...
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (en and fr mandatory)
 test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+test/helpers/fakeHub.js           simulated hubs (HTTP + WebSocket doubles; serve() for a manual check)
+test/helpers/world.js             fake Gladys + simulated hubs + temporary /data
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +81,10 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** comes in four languages (`en`, `fr`, `de` with "du",
+  `es` with "usted"): manifest texts, feature names, action, scene and widget
+  messages, and `docs/{en,fr,de,es}.md` with the same sections, kept in sync.
+  `test/i18n.test.js` checks them all.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +246,64 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## Logitech Harmony Hub (propre à cette intégration)
+
+Développée **sans le matériel** : le protocole suit aioharmony (Apache-2.0, la bibliothèque de
+l'intégration Home Assistant `harmony`). `scripts/probe.mjs` éprouve le client réel en lecture
+seule (`--ssdp` vérifie la réponse SSDP, `--listen 60` relève les notifications) ; `node
+scripts/fake-hub.mjs` sert un faux hub sur 127.0.0.1:8088 pour essayer le vrai client à la main.
+
+**API locale du hub (port 8088)**
+
+- Identification : `POST http://<ip>:8088/` avec l'en-tête `Origin: http://sl.dhg.myharmony.com`
+  et le corps `{"id ": 1, "cmd": "setup.account?getProvisionInfo", "params": {}}` (l'espace dans
+  `"id "` est celui d'aioharmony). La réponse donne `activeRemoteId` (un **nombre**, l'identifiant
+  du hub, clé des `external_id`) et `discoveryServer` (son hôte devient le `domain`) — mais aussi
+  **l'e-mail et l'id du compte Logitech** : `fetchProvisionInfo` ne garde que l'id du hub et le
+  domaine, rien du compte n'est stocké ni journalisé (`test/logs.test.js` le vérifie en debug).
+- WebSocket `ws://<ip>:8088/?domain=<domain>&hubId=<activeRemoteId>`. Requête :
+  `{ hubId, timeout: 5, hbus: { cmd, id, params } }`, réponse `{ cmd, id, code, msg, data }`
+  appariée par `id` ; `code` arrive en nombre ou en chaîne, 100 = en cours.
+- Notifications (champ `type`) : `connect.stateDigest?notify` (`activityId` en chaîne,
+  `activityStatus` 0 éteint, 1 démarrage, 2 démarrée ; `configVersion` + `syncStatus` 1 tant que
+  le hub se synchronise) et `harmony.engine?startActivityFinished`.
+- Lancer une activité : `harmony.activityengine?runactivity` avec
+  `{ async: "true", timestamp: 0, activityId: "<id>" }` ; les messages de progression portent le
+  même `id` (`harmony.engine?startActivity` 100 puis 200, ou `harmony.engine?helpdiscretes`). Tout
+  éteindre = lancer l'activité **`-1`** (« PowerOff »), qui figure dans la configuration : à
+  retirer des activités proposées, comme les activités sans libellé (vues par Home Assistant).
+- Touche : `…harmony.engine?holdAction`, `press` puis `release`, avec l'action écrite
+  `{"command":: "VolumeUp","type":: "IRCommand","deviceId":: "123"}` (**`::`**, pas du JSON) et
+  `IRCommand` quel que soit le type de l'appareil, exactement comme aioharmony.
+- La configuration (`…engine?config`) est grosse : n'en garder (et ne stocker dans `/data`) que
+  activités, appareils et noms de commandes (`src/harmony/model.js`). Une `action` peut valoir
+  `"null"` (tests d'aioharmony) : la fonction est ignorée.
+
+**Pièges et choix**
+
+- Le `WebSocket` natif de Node n'envoie pas de ping : la vivacité du lien est prouvée par la lecture
+  de l'activité toutes les 30 s ; une requête sans réponse alors que **rien** n'est revenu ferme le
+  lien et relance la reconnexion. Cette lecture est aussi le minuteur interne (Gladys#3198) : les
+  appareils sont publiés avec `should_poll: false`, `onPoll` reste un repli.
+- `node --test` exécute **tout** fichier de `test/`, aides comprises : un script qui sert un faux
+  hub pour toujours n'a rien à y faire (il bloquait la suite) → `scripts/fake-hub.mjs`.
+- `AbortSignal.timeout()` ne retient pas la boucle d'événements : un `fetch` qui pend sans autre
+  activité laisse le processus (ou le test) se terminer. Utiliser `AbortController` + `setTimeout`.
+- Les seules listes que Gladys remplit au vol sont les **appareils** (`source: "devices"`) : chaque
+  **activité est donc un appareil** (interrupteur « En cours »), pour être choisie dans une liste
+  par les déclencheurs, les actions de scène et les réglages du widget. Les commandes d'un appareil
+  ne peuvent pas être listées dans un formulaire de scène : liste fixe des noms Logitech usuels +
+  champ libre ; la liste complète passe par la fonctionnalité `text/select` « Commande » et l'action
+  du cœur « Contrôler un appareil ». Rechoisir la même option d'un `text/select` dans le tableau de
+  bord ne renvoie rien : d'où les boutons poussoirs `television/*`.
+- Déclencheurs : une clé de filtre ne doit pas être aussi une variable (le cœur copie la même valeur
+  dans les deux, or le filtre compare un `external_id` et la scène veut un nom) → `activity` /
+  `activity_name`. Pas d'événement pour ce que trouve la première lecture ou une reconnexion. Garde
+  anti-boucle : au plus 6 événements par hub et par minute.
+- Le garde-fou du « Sie » de politesse attrape aussi « Sie » = « ils/elles » et « Ihr » = « leur »
+  en début de phrase : reformuler la phrase allemande, ne pas affaiblir le test.
+- **À vérifier sur un vrai hub** (sonde) : que le hub répond au M-SEARCH sur son type
+  `urn:myharmony-com:device:harmony:1` ; la séquence réelle des `activityStatus` (un statut 3
+  « extinction » existerait-il ?) ; que `holdAction` répond `code` 200 ; que le WebSocket accepte un
+  client sans en-tête `Origin` (aioharmony n'en envoie pas non plus).
