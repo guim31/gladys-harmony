@@ -1,93 +1,142 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { createFakeGladys } from '@gladysassistant/integration-sdk/testing';
-import { DEVICE_BLUEPRINTS } from '../src/devices/index.js';
-import { MOTION_DETECTED_TRIGGER, motionSensor } from '../src/devices/motionSensor.js';
-import { SCENE_ACTIONS } from '../src/scenes.js';
-import { normalizeConfig } from '../src/config.js';
+import { COMMON_COMMANDS, DELAY_BOUNDS, REPEAT_BOUNDS } from '../src/scenes.js';
+import { ACTIVITY, DEVICE, createHub } from './helpers/fakeHub.js';
+import { createDevices, createWorld, ids } from './helpers/world.js';
 
-const manifest = JSON.parse(
-  await readFile(new URL('../gladys-assistant-integration.json', import.meta.url), 'utf8'),
-);
-const config = normalizeConfig();
-
-const declarationOf = (list, key) => manifest[list].find((entry) => entry.key === key);
-const keysOf = (list) => (list ?? []).map((entry) => entry.key);
-const deviceIdOf = (gladys, key) =>
-  DEVICE_BLUEPRINTS.find((bp) => bp.key === key).deviceExternalId(gladys);
-
-// Let the async interval callback run to completion.
-const flush = () => new Promise((resolve) => setImmediate(resolve));
-
-test('the motion sensor fires one motion_detected event per detection, none on the clear', async (t) => {
-  t.mock.timers.enable({ apis: ['setInterval', 'setTimeout'] });
-  const gladys = createFakeGladys();
-  const stopPush = motionSensor.startPush(gladys, config);
-  try {
-    t.mock.timers.tick(60_000);
-    await flush();
-    assert.equal(gladys.fake.sceneEvents.length, 1, 'one detection, one event');
-    assert.equal(gladys.fake.sceneEvents[0].key, MOTION_DETECTED_TRIGGER);
-    assert.equal(gladys.fake.states.at(-1).state, 1, 'the state is still published');
-
-    t.mock.timers.tick(10_000);
-    await flush();
-    assert.equal(gladys.fake.states.at(-1).state, 0, 'the detection is cleared');
-    assert.equal(gladys.fake.sceneEvents.length, 1, 'the clear fires no event');
-  } finally {
-    stopPush();
-  }
+test('"Start a Harmony activity" waits for the hub, then the states follow', async () => {
+  const world = await createWorld();
+  await createDevices(world);
+  const [hub] = world.hubs;
+  const { fake } = world.gladys;
+  const ack = await fake.sceneAction('start_activity', {
+    activity: ids.activity(world, hub, ACTIVITY.APPLE_TV).device,
+  });
+  assert.deepEqual(ack, { success: true });
+  assert.equal(hub.current, ACTIVITY.APPLE_TV);
+  assert.equal(fake.lastState(ids.hub(world, hub).feature('current_activity')), 'Watch Apple TV');
+  await world.app.stop();
 });
 
-test('motion_detected data only carries keys the trigger declares', async (t) => {
-  t.mock.timers.enable({ apis: ['setInterval', 'setTimeout'] });
-  const gladys = createFakeGladys();
-  const stopPush = motionSensor.startPush(gladys, config);
-  try {
-    t.mock.timers.tick(60_000);
-    await flush();
-  } finally {
-    stopPush();
-  }
-  const [{ data }] = gladys.fake.sceneEvents;
-  const trigger = declarationOf('scene_triggers', MOTION_DETECTED_TRIGGER);
-  // The core keeps the `fields` keys (filters) and the `variables` keys
-  // (exposed to the scene): any other key would be silently dropped.
-  const declared = [...keysOf(trigger.fields), ...keysOf(trigger.variables)];
-  for (const [key, value] of Object.entries(data)) {
-    assert.ok(declared.includes(key), `data.${key} is not declared, the core would drop it`);
-    assert.ok(value === null || typeof value !== 'object', `data.${key} must be a primitive`);
-  }
-  // A `"source": "devices"` filter stores a device external_id.
-  assert.equal(data.device, deviceIdOf(gladys, 'motion-sensor'));
-  const targets = trigger.fields.find((field) => field.key === 'target').options;
-  assert.ok(
-    targets.some((option) => option.value === data.target),
-    `data.target "${data.target}" must be one of the filter options`,
+test('"Start a Harmony activity" refuses a device that is not an activity', async () => {
+  const world = await createWorld({ config: { language: 'en' } });
+  const [hub] = world.hubs;
+  const ack = await world.gladys.fake.sceneAction('start_activity', {
+    activity: ids.appliance(world, hub, DEVICE.TV).device,
+  });
+  assert.deepEqual(ack, { success: false, error: 'Samsung TV is not a Harmony activity.' });
+  const unknown = await world.gladys.fake.sceneAction('start_activity', {
+    activity: 'ext:test-integration:activity:1-2',
+  });
+  assert.match(unknown.error, /^Unknown Harmony device/);
+  await world.app.stop();
+});
+
+test('"Turn everything off" takes the hub, or any of its devices', async () => {
+  const world = await createWorld({ hubs: [createHub({ current: ACTIVITY.WATCH_TV })] });
+  const [hub] = world.hubs;
+  const { fake } = world.gladys;
+  await fake.sceneAction('power_off', { hub: ids.appliance(world, hub, DEVICE.AVR).device });
+  assert.equal(hub.current, ACTIVITY.OFF);
+  hub.current = ACTIVITY.MUSIC;
+  await world.manager.refresh(world.manager.hubs.get(hub.remoteId));
+  await fake.sceneAction('power_off', { hub: ids.hub(world, hub).device });
+  assert.equal(hub.current, ACTIVITY.OFF);
+  // Already off: nothing is sent.
+  const runs = hub.received('runactivity').length;
+  assert.deepEqual(await fake.sceneAction('power_off', { hub: ids.hub(world, hub).device }), {
+    success: true,
+  });
+  assert.equal(hub.received('runactivity').length, runs);
+  await world.app.stop();
+});
+
+test('"Send a Harmony command": from the list, repeated with a delay', async () => {
+  const world = await createWorld();
+  const [hub] = world.hubs;
+  const started = Date.now();
+  const ack = await world.gladys.fake.sceneAction('send_command', {
+    device: ids.appliance(world, hub, DEVICE.AVR).device,
+    command: 'VolumeUp',
+    repeat: 3,
+    delay_ms: 20,
+  });
+  assert.deepEqual(ack, { success: true });
+  assert.deepEqual(
+    hub.commands.map(({ command, status }) => `${command} ${status}`),
+    ['press', 'release', 'press', 'release', 'press', 'release'].map((s) => `VolumeUp ${s}`),
   );
+  assert.ok(Date.now() - started >= 40);
+  await world.app.stop();
 });
 
-test('identify_device signals the chosen device and returns the declared outputs', async () => {
-  const gladys = createFakeGladys();
-  const outputs = await SCENE_ACTIONS.identify_device(gladys, {
-    fields: { device: deviceIdOf(gladys, 'light') },
-    config,
+test('"Send a Harmony command": a typed command wins over the list, by name or label', async () => {
+  const world = await createWorld();
+  const [hub] = world.hubs;
+  await world.gladys.fake.sceneAction('send_command', {
+    device: ids.appliance(world, hub, DEVICE.TV).device,
+    command: 'Mute',
+    custom_command: ' Input Hdmi2 ',
   });
-  assert.deepEqual(outputs, { signalled: true });
-  const declared = keysOf(declarationOf('scene_actions', 'identify_device').outputs);
-  for (const key of Object.keys(outputs)) {
-    assert.ok(declared.includes(key), `output "${key}" is not declared, the core would drop it`);
+  assert.deepEqual(
+    hub.commands.map((c) => c.command),
+    ['InputHdmi2', 'InputHdmi2'],
+  );
+  await world.app.stop();
+});
+
+test('"Send a Harmony command": the errors say what is wrong', async () => {
+  const world = await createWorld({ config: { language: 'fr' } });
+  const [hub] = world.hubs;
+  const { fake } = world.gladys;
+  const avr = ids.appliance(world, hub, DEVICE.AVR).device;
+  assert.equal(
+    (await fake.sceneAction('send_command', { device: avr })).error,
+    'Choisissez une commande, ou saisissez-en une.',
+  );
+  assert.equal(
+    (await fake.sceneAction('send_command', { device: avr, command: 'ChannelUp' })).error,
+    "Denon AV Receiver n'a pas de commande « ChannelUp ».",
+  );
+  assert.equal(
+    (
+      await fake.sceneAction('send_command', {
+        device: ids.activity(world, hub, ACTIVITY.XBOX).device,
+        command: 'Mute',
+      })
+    ).error,
+    "Play Xbox n'est pas un appareil piloté par un Harmony Hub.",
+  );
+  hub.refusals.set('vnd.logitech.harmony/vnd.logitech.harmony.engine?holdAction', {
+    code: 503,
+    msg: 'Busy',
+  });
+  assert.equal(
+    (await fake.sceneAction('send_command', { device: avr, command: 'Mute' })).error,
+    'Mute a échoué : Mute refused (503 Busy).',
+  );
+  await world.app.stop();
+});
+
+test('out-of-range repeats and delays are brought back within bounds', async () => {
+  const world = await createWorld();
+  const [hub] = world.hubs;
+  await world.gladys.fake.sceneAction('send_command', {
+    device: ids.appliance(world, hub, DEVICE.AVR).device,
+    command: 'Mute',
+    repeat: 0,
+    delay_ms: -5,
+  });
+  assert.equal(hub.commands.length, 2);
+  assert.deepEqual(REPEAT_BOUNDS, { min: 1, max: 20, default: 1 });
+  assert.deepEqual(DELAY_BOUNDS, { min: 0, max: 5000, default: 400 });
+  await world.app.stop();
+});
+
+test('the usual commands of the list are distinct Logitech command names', () => {
+  const values = COMMON_COMMANDS.map((command) => command.value);
+  assert.equal(new Set(values).size, values.length);
+  for (const command of COMMON_COMMANDS) {
+    assert.match(command.value, /^[A-Z][A-Za-z]+$/);
   }
-});
-
-test('identify_device reports a device that cannot signal itself through its output', async () => {
-  // Not a failure: a scene action is never a condition, the scene author
-  // gates the following actions on the output instead.
-  const gladys = createFakeGladys();
-  const outputs = await SCENE_ACTIONS.identify_device(gladys, {
-    fields: { device: deviceIdOf(gladys, 'weather-station') },
-    config,
-  });
-  assert.deepEqual(outputs, { signalled: false });
 });

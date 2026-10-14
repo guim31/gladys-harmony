@@ -1,0 +1,23 @@
+[
+  {
+    "source_ip": "192.0.2.40",
+    "source_mac": "02:00:5e:10:00:40",
+    "source_port": 1900,
+    "headers": "HTTP/1.1 200 OK\r\nCACHE-CONTROL: max-age=1800\r\nEXT:\r\nLOCATION: http://192.0.2.40:8088/description.xml\r\nSERVER: Linux/3.x, UPnP/1.0, myharmony/1.0\r\nST: urn:myharmony-com:device:harmony:1\r\nUSN: uuid:00000000-0000-4000-8000-000000000040::urn:myharmony-com:device:harmony:1\r\n\r\n"
+  },
+  {
+    "source_ip": "192.0.2.40",
+    "source_port": 1900,
+    "headers": "HTTP/1.1 200 OK\r\nCACHE-CONTROL: max-age=1800\r\nEXT:\r\nLOCATION: http://192.0.2.40:8088/description.xml\r\nST: urn:myharmony-com:device:harmony:1\r\nUSN: uuid:00000000-0000-4000-8000-000000000040::urn:myharmony-com:device:harmony:1\r\n\r\n"
+  },
+  {
+    "source_ip": "192.0.2.30",
+    "source_port": 1900,
+    "headers": "HTTP/1.1 200 OK\r\nCACHE-CONTROL: max-age=1800\r\nEXT:\r\nLOCATION: http://192.0.2.30:1400/xml/device_description.xml\r\nSERVER: Linux UPnP/1.0 Sonos/70.3-35220 (ZPS1)\r\nST: urn:schemas-upnp-org:device:MediaRenderer:1\r\nUSN: uuid:RINCON_000E58000000001400::urn:schemas-upnp-org:device:MediaRenderer:1\r\n\r\n"
+  },
+  {
+    "source_ip": "not-an-ip",
+    "source_port": 1900,
+    "headers": "ST: urn:myharmony-com:device:harmony:1\r\n"
+  }
+]

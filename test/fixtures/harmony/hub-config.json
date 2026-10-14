@@ -1,0 +1,722 @@
+{
+  "activity": [
+    {
+      "label": "Watch TV",
+      "suggestedDisplay": "Default",
+      "id": "30197730",
+      "activityTypeDisplayName": "Default",
+      "controlGroup": [
+        {
+          "name": "Volume",
+          "function": [
+            {
+              "action": "{\"command\":\"Mute\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "Mute",
+              "label": "Mute"
+            },
+            {
+              "action": "{\"command\":\"VolumeDown\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeDown",
+              "label": "Volume Down"
+            },
+            {
+              "action": "{\"command\":\"VolumeUp\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeUp",
+              "label": "Volume Up"
+            }
+          ]
+        }
+      ],
+      "isTuningDefault": true,
+      "sequences": [],
+      "activityOrder": 0,
+      "fixit": {
+        "38343689": {
+          "id": "38343689",
+          "Power": "On",
+          "Input": "InputHdmi1"
+        }
+      },
+      "type": "VirtualTelevisionN",
+      "icon": "userdata: 0x4454e0",
+      "baseImageUri": "https://example.com/",
+      "isAVActivity": true,
+      "rules": [],
+      "zones": null,
+      "enterActions": [],
+      "VolumeActivityRole": {
+        "38343690": "VolumeActivityRole"
+      }
+    },
+    {
+      "label": "Watch Apple TV",
+      "suggestedDisplay": "Default",
+      "id": "30197731",
+      "activityTypeDisplayName": "Default",
+      "controlGroup": [
+        {
+          "name": "Volume",
+          "function": [
+            {
+              "action": "{\"command\":\"Mute\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "Mute",
+              "label": "Mute"
+            },
+            {
+              "action": "{\"command\":\"VolumeDown\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeDown",
+              "label": "Volume Down"
+            },
+            {
+              "action": "{\"command\":\"VolumeUp\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeUp",
+              "label": "Volume Up"
+            }
+          ]
+        }
+      ],
+      "isTuningDefault": true,
+      "sequences": [],
+      "activityOrder": 1,
+      "fixit": {
+        "38343689": {
+          "id": "38343689",
+          "Power": "On",
+          "Input": "InputHdmi1"
+        }
+      },
+      "type": "VirtualGeneric",
+      "icon": "userdata: 0x4454e0",
+      "baseImageUri": "https://example.com/",
+      "isAVActivity": true,
+      "rules": [],
+      "zones": null,
+      "enterActions": [],
+      "VolumeActivityRole": {
+        "38343690": "VolumeActivityRole"
+      }
+    },
+    {
+      "label": "Listen to Music",
+      "suggestedDisplay": "Default",
+      "id": "30197732",
+      "activityTypeDisplayName": "Default",
+      "controlGroup": [
+        {
+          "name": "Volume",
+          "function": [
+            {
+              "action": "{\"command\":\"Mute\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "Mute",
+              "label": "Mute"
+            },
+            {
+              "action": "{\"command\":\"VolumeDown\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeDown",
+              "label": "Volume Down"
+            },
+            {
+              "action": "{\"command\":\"VolumeUp\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeUp",
+              "label": "Volume Up"
+            }
+          ]
+        }
+      ],
+      "isTuningDefault": true,
+      "sequences": [],
+      "activityOrder": 2,
+      "fixit": {
+        "38343689": {
+          "id": "38343689",
+          "Power": "On",
+          "Input": "InputHdmi1"
+        }
+      },
+      "type": "VirtualCdMulti",
+      "icon": "userdata: 0x4454e0",
+      "baseImageUri": "https://example.com/",
+      "isAVActivity": true,
+      "rules": [],
+      "zones": null,
+      "enterActions": [],
+      "VolumeActivityRole": {
+        "38343690": "VolumeActivityRole"
+      }
+    },
+    {
+      "label": "Play Xbox",
+      "suggestedDisplay": "Default",
+      "id": "30197733",
+      "activityTypeDisplayName": "Default",
+      "controlGroup": [
+        {
+          "name": "Volume",
+          "function": [
+            {
+              "action": "{\"command\":\"Mute\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "Mute",
+              "label": "Mute"
+            },
+            {
+              "action": "{\"command\":\"VolumeDown\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeDown",
+              "label": "Volume Down"
+            },
+            {
+              "action": "{\"command\":\"VolumeUp\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeUp",
+              "label": "Volume Up"
+            }
+          ]
+        }
+      ],
+      "isTuningDefault": true,
+      "sequences": [],
+      "activityOrder": 3,
+      "fixit": {
+        "38343689": {
+          "id": "38343689",
+          "Power": "On",
+          "Input": "InputHdmi1"
+        }
+      },
+      "type": "VirtualGameConsole",
+      "icon": "userdata: 0x4454e0",
+      "baseImageUri": "https://example.com/",
+      "isAVActivity": true,
+      "rules": [],
+      "zones": null,
+      "enterActions": [],
+      "VolumeActivityRole": {
+        "38343690": "VolumeActivityRole"
+      }
+    },
+    {
+      "label": "PowerOff",
+      "id": "-1",
+      "type": "PowerOff",
+      "isAVActivity": false,
+      "suggestedDisplay": "Default",
+      "controlGroup": [],
+      "sequences": [],
+      "rules": [],
+      "zones": null,
+      "enterActions": [],
+      "fixit": {}
+    },
+    {
+      "id": "10000",
+      "label": null
+    }
+  ],
+  "device": [
+    {
+      "label": "Samsung TV",
+      "deviceAddedDate": "/Date(1446476426270+0000)/",
+      "ControlPort": 1,
+      "contentProfileKey": 38343689,
+      "deviceProfileUri": "svcs.myharmony.com/res/device/38343689-example",
+      "manufacturer": "Samsung",
+      "icon": "1",
+      "suggestedDisplay": "DEFAULT",
+      "deviceTypeDisplayName": "Television",
+      "powerFeatures": {
+        "PowerOnActions": [
+          {
+            "__type": "IRPressAction",
+            "IRCommandName": "PowerOn",
+            "Order": 0,
+            "Duration": null,
+            "ActionId": 0
+          }
+        ],
+        "PowerOffActions": [
+          {
+            "__type": "IRPressAction",
+            "IRCommandName": "PowerOff",
+            "Order": 0,
+            "Duration": null,
+            "ActionId": 0
+          }
+        ]
+      },
+      "Capabilities": [1, 2, 3, 5, 6, 7, 8, 9, 12, 13, 15, 16],
+      "DongleRFID": 0,
+      "IsKeyboardAssociated": false,
+      "model": "UN55H6350",
+      "type": "Television",
+      "id": "38343689",
+      "isManualPower": "false",
+      "controlGroup": [
+        {
+          "name": "Power",
+          "function": [
+            {
+              "action": "{\"command\":\"PowerOff\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "PowerOff",
+              "label": "Power Off"
+            },
+            {
+              "action": "{\"command\":\"PowerOn\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "PowerOn",
+              "label": "Power On"
+            },
+            {
+              "action": "{\"command\":\"PowerToggle\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "PowerToggle",
+              "label": "Power Toggle"
+            }
+          ]
+        },
+        {
+          "name": "NumericBasic",
+          "function": [
+            {
+              "action": "{\"command\":\"Number0\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Number0",
+              "label": "0"
+            },
+            {
+              "action": "{\"command\":\"Number1\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Number1",
+              "label": "1"
+            },
+            {
+              "action": "{\"command\":\"Number2\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Number2",
+              "label": "2"
+            },
+            {
+              "action": "{\"command\":\"Number3\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Number3",
+              "label": "3"
+            }
+          ]
+        },
+        {
+          "name": "Volume",
+          "function": [
+            {
+              "action": "{\"command\":\"Mute\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Mute",
+              "label": "Mute"
+            },
+            {
+              "action": "{\"command\":\"VolumeDown\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "VolumeDown",
+              "label": "Volume Down"
+            },
+            {
+              "action": "{\"command\":\"VolumeUp\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "VolumeUp",
+              "label": "Volume Up"
+            }
+          ]
+        },
+        {
+          "name": "Channel",
+          "function": [
+            {
+              "action": "{\"command\":\"ChannelPrev\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "ChannelPrev",
+              "label": "Channel Prev"
+            },
+            {
+              "action": "{\"command\":\"ChannelDown\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "ChannelDown",
+              "label": "Channel Down"
+            },
+            {
+              "action": "{\"command\":\"ChannelUp\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "ChannelUp",
+              "label": "Channel Up"
+            }
+          ]
+        },
+        {
+          "name": "NavigationBasic",
+          "function": [
+            {
+              "action": "{\"command\":\"DirectionDown\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "DirectionDown",
+              "label": "Direction Down"
+            },
+            {
+              "action": "{\"command\":\"DirectionLeft\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "DirectionLeft",
+              "label": "Direction Left"
+            },
+            {
+              "action": "{\"command\":\"DirectionRight\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "DirectionRight",
+              "label": "Direction Right"
+            },
+            {
+              "action": "{\"command\":\"DirectionUp\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "DirectionUp",
+              "label": "Direction Up"
+            },
+            {
+              "action": "{\"command\":\"Select\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Select",
+              "label": "Select"
+            }
+          ]
+        },
+        {
+          "name": "TransportBasic",
+          "function": [
+            {
+              "action": "{\"command\":\"Stop\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Stop",
+              "label": "Stop"
+            },
+            {
+              "action": "{\"command\":\"Play\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Play",
+              "label": "Play"
+            },
+            {
+              "action": "{\"command\":\"Rewind\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Rewind",
+              "label": "Rewind"
+            },
+            {
+              "action": "{\"command\":\"Pause\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Pause",
+              "label": "Pause"
+            },
+            {
+              "action": "{\"command\":\"FastForward\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "FastForward",
+              "label": "Fast Forward"
+            }
+          ]
+        },
+        {
+          "name": "NavigationExtended",
+          "function": [
+            {
+              "action": "{\"command\":\"Guide\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Guide",
+              "label": "Guide"
+            },
+            {
+              "action": "{\"command\":\"Info\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Info",
+              "label": "Info"
+            },
+            {
+              "action": "{\"command\":\"Exit\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Exit",
+              "label": "Exit"
+            },
+            {
+              "action": "{\"command\":\"Return\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Return",
+              "label": "Return"
+            }
+          ]
+        },
+        {
+          "name": "ColoredButtons",
+          "function": [
+            {
+              "action": "{\"command\":\"Green\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Green",
+              "label": "Green"
+            },
+            {
+              "action": "{\"command\":\"Red\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Red",
+              "label": "Red"
+            },
+            {
+              "action": "{\"command\":\"Blue\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Blue",
+              "label": "Blue"
+            },
+            {
+              "action": "{\"command\":\"Yellow\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Yellow",
+              "label": "Yellow"
+            }
+          ]
+        },
+        {
+          "name": "Setup",
+          "function": [
+            {
+              "action": "{\"command\":\"Menu\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "Menu",
+              "label": "Menu"
+            },
+            {
+              "action": "{\"command\":\"SmartHub\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "SmartHub",
+              "label": "Smart Hub"
+            }
+          ]
+        },
+        {
+          "name": "Input",
+          "function": [
+            {
+              "action": "{\"command\":\"InputHdmi1\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "InputHdmi1",
+              "label": "Input Hdmi1"
+            },
+            {
+              "action": "{\"command\":\"InputHdmi2\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "InputHdmi2",
+              "label": "Input Hdmi2"
+            },
+            {
+              "action": "{\"command\":\"InputTv\",\"type\":\"IRCommand\",\"deviceId\":\"38343689\"}",
+              "name": "InputTv",
+              "label": "Input Tv"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Denon AV Receiver",
+      "deviceAddedDate": "/Date(1446476510113+0000)/",
+      "ControlPort": 1,
+      "contentProfileKey": 38343690,
+      "deviceProfileUri": "svcs.myharmony.com/res/device/38343690-example",
+      "manufacturer": "Denon",
+      "icon": "1",
+      "suggestedDisplay": "DEFAULT",
+      "deviceTypeDisplayName": "AmplifierOrReceiver",
+      "Capabilities": [1, 2, 3, 5],
+      "DongleRFID": 0,
+      "IsKeyboardAssociated": false,
+      "model": "AVR-X1100W",
+      "type": "AmplifierOrReceiver",
+      "id": "38343690",
+      "isManualPower": "false",
+      "controlGroup": [
+        {
+          "name": "Power",
+          "function": [
+            {
+              "action": "{\"command\":\"PowerOff\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "PowerOff",
+              "label": "Power Off"
+            },
+            {
+              "action": "{\"command\":\"PowerOn\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "PowerOn",
+              "label": "Power On"
+            }
+          ]
+        },
+        {
+          "name": "Volume",
+          "function": [
+            {
+              "action": "{\"command\":\"Mute\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "Mute",
+              "label": "Mute"
+            },
+            {
+              "action": "{\"command\":\"VolumeDown\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeDown",
+              "label": "Volume Down"
+            },
+            {
+              "action": "{\"command\":\"VolumeUp\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "VolumeUp",
+              "label": "Volume Up"
+            }
+          ]
+        },
+        {
+          "name": "Input",
+          "function": [
+            {
+              "action": "{\"command\":\"InputBluray\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "InputBluray",
+              "label": "Input Bluray"
+            },
+            {
+              "action": "{\"command\":\"InputGame\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "InputGame",
+              "label": "Input Game"
+            },
+            {
+              "action": "{\"command\":\"InputMediaPlayer\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "InputMediaPlayer",
+              "label": "Input Media Player"
+            },
+            {
+              "action": "{\"command\":\"InputTv\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "InputTv",
+              "label": "Input Tv"
+            }
+          ]
+        },
+        {
+          "name": "SoundModes",
+          "function": [
+            {
+              "action": "{\"command\":\"Movie\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "Movie",
+              "label": "Movie"
+            },
+            {
+              "action": "{\"command\":\"Music\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "Music",
+              "label": "Music"
+            },
+            {
+              "action": "{\"command\":\"Stereo\",\"type\":\"IRCommand\",\"deviceId\":\"38343690\"}",
+              "name": "Stereo",
+              "label": "Stereo"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Apple TV",
+      "deviceAddedDate": "/Date(1446476601457+0000)/",
+      "ControlPort": 1,
+      "contentProfileKey": 38343691,
+      "deviceProfileUri": "svcs.myharmony.com/res/device/38343691-example",
+      "manufacturer": "Apple",
+      "icon": "1",
+      "suggestedDisplay": "DEFAULT",
+      "deviceTypeDisplayName": "MediaPlayer",
+      "Capabilities": [1, 2],
+      "DongleRFID": 0,
+      "IsKeyboardAssociated": false,
+      "model": "Apple TV 4K",
+      "type": "DigitalMusicServer",
+      "id": "38343691",
+      "isManualPower": "true",
+      "controlGroup": [
+        {
+          "name": "NavigationBasic",
+          "function": [
+            {
+              "action": "{\"command\":\"DirectionDown\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "DirectionDown",
+              "label": "Direction Down"
+            },
+            {
+              "action": "{\"command\":\"DirectionLeft\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "DirectionLeft",
+              "label": "Direction Left"
+            },
+            {
+              "action": "{\"command\":\"DirectionRight\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "DirectionRight",
+              "label": "Direction Right"
+            },
+            {
+              "action": "{\"command\":\"DirectionUp\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "DirectionUp",
+              "label": "Direction Up"
+            },
+            {
+              "action": "{\"command\":\"Select\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "Select",
+              "label": "Select"
+            }
+          ]
+        },
+        {
+          "name": "TransportBasic",
+          "function": [
+            {
+              "action": "{\"command\":\"Play\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "Play",
+              "label": "Play"
+            },
+            {
+              "action": "{\"command\":\"Pause\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "Pause",
+              "label": "Pause"
+            },
+            {
+              "action": "{\"command\":\"Rewind\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "Rewind",
+              "label": "Rewind"
+            },
+            {
+              "action": "{\"command\":\"FastForward\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "FastForward",
+              "label": "Fast Forward"
+            }
+          ]
+        },
+        {
+          "name": "TransportExtended",
+          "function": [
+            {
+              "action": "{\"command\":\"SkipBack\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "SkipBack",
+              "label": "Skip Back"
+            },
+            {
+              "action": "{\"command\":\"SkipForward\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "SkipForward",
+              "label": "Skip Forward"
+            }
+          ]
+        },
+        {
+          "name": "NavigationDVD",
+          "function": [
+            {
+              "action": "{\"command\":\"Menu\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "Menu",
+              "label": "Menu"
+            },
+            {
+              "action": "{\"command\":\"Home\",\"type\":\"IRCommand\",\"deviceId\":\"38343691\"}",
+              "name": "Home",
+              "label": "Home"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Smart Plug",
+      "id": "38343692",
+      "manufacturer": "Logitech",
+      "model": "Harmony Plug",
+      "type": "SmartPlug",
+      "controlGroup": [
+        {
+          "name": "Power",
+          "function": [
+            {
+              "action": "null"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "content": {
+    "contentUserHost": "https://content.dhg.myharmony.com/content/user/{userProfileUri}",
+    "householdUserProfileUri": "https://content.dhg.myharmony.com/Household/123/profile",
+    "contentDeviceHost": "https://content.dhg.myharmony.com/content/device/{deviceProfileUri}",
+    "contentServiceHost": "https://content.dhg.myharmony.com/content/service/{providerId}/{lineupId}",
+    "contentImageHost": "https://content.dhg.myharmony.com/content/image/{imageName}"
+  },
+  "global": {
+    "timeStampHash": "6d9c0f-3c0d4e5a-12345678",
+    "locale": "en-US"
+  },
+  "sla": {
+    "latestSLAAcceptedDate": "2015-11-02T15:00:24.6969037Z",
+    "latestSLAAccepted": true
+  }
+}

@@ -30,6 +30,22 @@ Gladys before reporting a problem.
 
 In scope: the code of this repository and the Docker image it publishes.
 
+What the integration handles:
+
+- **No credential.** The hub answers on the local network without a password or
+  a token; the integration asks for none and stores none. The hub's
+  provisioning answer also carries the Logitech account (e-mail, account id):
+  only the hub id is kept from it, and nothing of the account is stored or
+  logged (a test checks the logs at the debug level).
+- **`/data/harmony-state.json`**: the hubs seen (hub id, address, name,
+  firmware) and the useful part of their configuration (activities, devices,
+  command names), so their devices stay listed while a hub is off.
+- **Network**: plain HTTP and WebSocket to port 8088 of the hubs, on the local
+  network only — the hub offers no encryption. SSDP searches go through the
+  Gladys core (mediated discovery). No Internet access is needed or used.
+- Anyone on the local network can drive the hub the same way: that is the
+  hub's design, not something the integration can change.
+
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+the Harmony Hub, its firmware and the Logitech services.

@@ -1,45 +1,69 @@
 // -----------------------------------------------------------------------------
-// Integration configuration.
-//
-// The configuration is filled in by the user in Gladys, from the `config_schema`
-// declared in `gladys-assistant-integration.json`. The SDK fetches it for you
-// (`gladys.getConfig()`) and notifies you of every change through
-// `gladys.onConfigUpdated()`.
-//
-// This module only provides defaults and normalizes the received object, so the
-// rest of the code never has to deal with `undefined`.
+// Integration configuration: defaults (they mirror the `default` values of the
+// manifest `config_schema`, test/manifest.test.js checks it) and normalization
+// of what Gladys sends, so the rest of the code never deals with `undefined`
+// or with a half-typed address.
 // -----------------------------------------------------------------------------
 
-// Defaults: they MUST stay consistent with the `default` values declared in the
-// `config_schema` of the manifest.
+import { isIPv4 } from 'node:net';
+
+export const LANGUAGES = ['en', 'fr', 'de', 'es'];
+
 export const DEFAULT_CONFIG = {
-  latitude: 48.8566, // Paris
-  longitude: 2.3522,
-  unit: 'celsius', // 'celsius' | 'fahrenheit'
-  // Seconds between two reads of the polled sensors. Gladys polls at most once
-  // a minute: slower intervals are applied by skipping polls (see
-  // createPoller in src/devices/index.js).
-  poll_frequency: 300,
-  // Reserved key (NOT in config_schema): because the manifest declares both
-  // 'local' and 'cloud' in its `transports` field, Gladys shows a standard
-  // "Prefer the local connection" toggle and sends the user's choice here.
-  // Read-only for the integration; defaults to true.
-  GLADYS_PREFER_LOCAL: true,
+  // Addresses of the hubs, typed by the user, separated by commas. Optional:
+  // the SSDP search through Gladys finds the hubs of the local network.
+  hosts: '',
+  // Language of the feature names, of the "Off" activity and of the texts the
+  // container produces (scene action errors, the Configuration screen report).
+  language: 'fr',
 };
+
+// A DNS name: labels of letters, digits and hyphens. No scheme, no port, no
+// path: the hub always listens on port 8088.
+const HOSTNAME =
+  /^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i;
+
+/**
+ * One typed address, cleaned of what users commonly paste with it
+ * (`http://`, a trailing slash, the `:8088` port).
+ * @returns {string|null} the host, or null when it is not an address
+ */
+export function cleanHost(raw) {
+  let host = String(raw ?? '').trim();
+  host = host.replace(/^[a-z]+:\/\//i, '').replace(/\/.*$/, '');
+  host = host.replace(/:8088$/, '');
+  if (host === '') {
+    return null;
+  }
+  if (isIPv4(host)) {
+    return host;
+  }
+  // A dotted quad that is not a valid IPv4 address is a typo, not a name.
+  if (/^[\d.]+$/.test(host)) {
+    return null;
+  }
+  return HOSTNAME.test(host) ? host.toLowerCase() : null;
+}
 
 /**
  * Merge the user config with the defaults.
  * @param {Record<string, unknown>} raw config returned by the SDK
+ * @returns {{ hosts: string[], invalidHosts: string[], language: string }}
  */
 export function normalizeConfig(raw = {}) {
-  return {
-    ...DEFAULT_CONFIG,
-    ...raw,
-    // Force the types: config may arrive as strings from a form.
-    latitude: Number(raw.latitude ?? DEFAULT_CONFIG.latitude),
-    longitude: Number(raw.longitude ?? DEFAULT_CONFIG.longitude),
-    poll_frequency: Number(raw.poll_frequency ?? DEFAULT_CONFIG.poll_frequency),
-    // The preference is a boolean; anything but an explicit false means true.
-    GLADYS_PREFER_LOCAL: raw.GLADYS_PREFER_LOCAL !== false,
-  };
+  const hosts = [];
+  const invalidHosts = [];
+  for (const part of String(raw.hosts ?? DEFAULT_CONFIG.hosts).split(/[,;\s]+/)) {
+    if (part.trim() === '') {
+      continue;
+    }
+    const host = cleanHost(part);
+    if (host === null) {
+      invalidHosts.push(part.trim());
+    } else if (!hosts.includes(host)) {
+      hosts.push(host);
+    }
+  }
+  const language = LANGUAGES.includes(raw.language) ? raw.language : DEFAULT_CONFIG.language;
+  return { hosts, invalidHosts, language };
 }

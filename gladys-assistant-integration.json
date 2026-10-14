@@ -1,177 +1,759 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Logitech Harmony Hub",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Logitech Harmony Hub on the local network: activities, remote commands, scene triggers.",
+    "fr": "Logitech Harmony Hub en réseau local : activités, commandes de télécommande, scènes.",
+    "de": "Logitech Harmony Hub im lokalen Netzwerk: Aktivitäten, Fernbedienungsbefehle, Szenen.",
+    "es": "Logitech Harmony Hub en la red local: actividades, comandos del mando, escenas."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-harmony:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-harmony/main/cover.png",
+  "categories": ["multimedia"],
+  "transports": ["local"],
+  "network_discovery": [
+    {
+      "type": "ssdp",
+      "st": "urn:myharmony-com:device:harmony:1"
+    }
+  ],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Finding your hubs",
+        "fr": "Trouver vos hubs",
+        "de": "Deine Hubs finden",
+        "es": "Encontrar sus hubs"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "Harmony Hubs on the same network as Gladys are searched automatically: open the Discover tab. If yours is missing, enter its IP address below (Harmony app: Menu, Harmony Setup, Add/Edit Devices & Activities, Hub, Network Info). Developed without the hardware: feedback welcome. Not affiliated with Logitech.",
+        "fr": "Les Harmony Hub du même réseau que Gladys sont recherchés automatiquement : ouvrez l'onglet Découverte. S'il manque le vôtre, saisissez son adresse IP ci-dessous (application Harmony : Menu, Configuration Harmony, Ajouter/modifier des appareils et activités, Hub, Informations réseau). Développée sans le matériel : vos retours sont bienvenus. Sans lien avec Logitech.",
+        "de": "Harmony Hubs im selben Netzwerk wie Gladys werden automatisch gesucht: Öffne den Tab „Entdecken“. Fehlt deiner, gib unten seine IP-Adresse ein (Harmony-App: Menü, Harmony-Einrichtung, Geräte & Aktivitäten hinzufügen/bearbeiten, Hub, Netzwerkinfo). Ohne die Hardware entwickelt: Rückmeldungen willkommen. Nicht mit Logitech verbunden.",
+        "es": "Los Harmony Hub de la misma red que Gladys se buscan automáticamente: abra la pestaña Descubrir. Si falta el suyo, introduzca su dirección IP a continuación (aplicación Harmony: Menú, Configuración de Harmony, Añadir/editar dispositivos y actividades, Hub, Información de red). Desarrollada sin el hardware: sus comentarios son bienvenidos. Sin relación con Logitech."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://github.com/guim31/gladys-harmony/blob/main/docs/en.md",
+          "label": {
+            "en": "Setup guide",
+            "fr": "Guide d'installation",
+            "de": "Installationsanleitung",
+            "es": "Guía de instalación"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "hosts",
+      "type": "string",
+      "label": {
+        "en": "Hub IP addresses",
+        "fr": "Adresses IP des hubs",
+        "de": "IP-Adressen der Hubs",
+        "es": "Direcciones IP de los hubs"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "description": {
+        "en": "Optional, separated by commas. Only needed for the hubs the automatic search does not find. Give the hub a fixed address in your router.",
+        "fr": "Facultatif, séparées par des virgules. Seulement pour les hubs que la recherche automatique ne trouve pas. Donnez au hub une adresse fixe dans votre box.",
+        "de": "Optional, durch Kommas getrennt. Nur für Hubs nötig, die die automatische Suche nicht findet. Gib dem Hub eine feste Adresse in deinem Router.",
+        "es": "Opcional, separadas por comas. Solo para los hubs que la búsqueda automática no encuentra. Asigne al hub una dirección fija en su router."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.40",
+        "fr": "ex. 192.168.1.40",
+        "de": "z. B. 192.168.1.40",
+        "es": "p. ej. 192.168.1.40"
+      },
+      "required": false,
+      "default": ""
     },
     {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
+      "key": "language",
       "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
-      "required": false,
-      "default": "celsius",
-      "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
-      ]
-    },
-    {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "label": {
+        "en": "Language",
+        "fr": "Langue",
+        "de": "Sprache",
+        "es": "Idioma"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Names given to the features of new devices (Activity, Command...), name of the \"Off\" choice, and language of the error messages.",
+        "fr": "Noms donnés aux fonctionnalités des nouveaux appareils (Activité, Commande…), nom du choix « Éteint » et langue des messages d'erreur.",
+        "de": "Namen, die den Funktionen neuer Geräte gegeben werden (Aktivität, Befehl…), Name der Auswahl „Aus“ und Sprache der Fehlermeldungen.",
+        "es": "Nombres dados a las funciones de los nuevos dispositivos (Actividad, Comando…), nombre de la opción «Apagado» e idioma de los mensajes de error."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "search",
+      "label": {
+        "en": "Search for hubs",
+        "fr": "Rechercher les hubs",
+        "de": "Hubs suchen",
+        "es": "Buscar hubs"
+      },
+      "description": {
+        "en": "Searches the network and the addresses typed above, then lists the hubs found.",
+        "fr": "Cherche sur le réseau et aux adresses saisies ci-dessus, puis liste les hubs trouvés.",
+        "de": "Sucht im Netzwerk und unter den oben eingegebenen Adressen und listet die gefundenen Hubs auf.",
+        "es": "Busca en la red y en las direcciones introducidas arriba, y luego enumera los hubs encontrados."
+      },
       "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "activity_started",
+      "label": {
+        "en": "Harmony activity started",
+        "fr": "Activité Harmony lancée",
+        "de": "Harmony-Aktivität gestartet",
+        "es": "Actividad Harmony iniciada"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "The hub starts an activity, from the remote, the app or Gladys: dim the lights for a film.",
+        "fr": "Le hub lance une activité, depuis la télécommande, l'application ou Gladys : tamisez la lumière pour un film.",
+        "de": "Der Hub startet eine Aktivität, über die Fernbedienung, die App oder Gladys: Dimme das Licht für einen Film.",
+        "es": "El hub inicia una actividad, desde el mando, la aplicación o Gladys: atenúe las luces para una película."
       },
       "fields": [
         {
-          "key": "device",
+          "key": "activity",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "label": {
+            "en": "Activity",
+            "fr": "Activité",
+            "de": "Aktivität",
+            "es": "Actividad"
+          },
+          "description": {
+            "en": "Empty: any activity.",
+            "fr": "Vide : n'importe quelle activité.",
+            "de": "Leer: jede Aktivität.",
+            "es": "Vacío: cualquier actividad."
+          }
         },
         {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "key": "hub",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Hub",
+            "fr": "Hub",
+            "de": "Hub",
+            "es": "Hub"
+          },
+          "description": {
+            "en": "Empty: any hub.",
+            "fr": "Vide : n'importe quel hub.",
+            "de": "Leer: jeder Hub.",
+            "es": "Vacío: cualquier hub."
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "activity_name",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Activity",
+            "fr": "Activité",
+            "de": "Aktivität",
+            "es": "Actividad"
+          }
+        },
+        {
+          "key": "previous_activity_name",
+          "type": "string",
+          "label": {
+            "en": "Previous activity",
+            "fr": "Activité précédente",
+            "de": "Vorherige Aktivität",
+            "es": "Actividad anterior"
+          }
+        },
+        {
+          "key": "hub_name",
+          "type": "string",
+          "label": {
+            "en": "Hub",
+            "fr": "Hub",
+            "de": "Hub",
+            "es": "Hub"
+          }
+        }
+      ]
+    },
+    {
+      "key": "powered_off",
+      "label": {
+        "en": "Harmony turned everything off",
+        "fr": "Harmony a tout éteint",
+        "de": "Harmony hat alles ausgeschaltet",
+        "es": "Harmony lo ha apagado todo"
+      },
+      "description": {
+        "en": "The hub turns everything off (\"Off\" button of the remote, app or Gladys).",
+        "fr": "Le hub éteint tout (bouton « Off » de la télécommande, application ou Gladys).",
+        "de": "Der Hub schaltet alles aus (Taste „Off“ der Fernbedienung, App oder Gladys).",
+        "es": "El hub lo apaga todo (botón «Off» del mando, aplicación o Gladys)."
+      },
+      "fields": [
+        {
+          "key": "hub",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Hub",
+            "fr": "Hub",
+            "de": "Hub",
+            "es": "Hub"
+          },
+          "description": {
+            "en": "Empty: any hub.",
+            "fr": "Vide : n'importe quel hub.",
+            "de": "Leer: jeder Hub.",
+            "es": "Vacío: cualquier hub."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "previous_activity_name",
+          "type": "string",
+          "label": {
+            "en": "Previous activity",
+            "fr": "Activité précédente",
+            "de": "Vorherige Aktivität",
+            "es": "Actividad anterior"
+          }
+        },
+        {
+          "key": "hub_name",
+          "type": "string",
+          "label": {
+            "en": "Hub",
+            "fr": "Hub",
+            "de": "Hub",
+            "es": "Hub"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "start_activity",
+      "label": {
+        "en": "Start a Harmony activity",
+        "fr": "Lancer une activité Harmony",
+        "de": "Harmony-Aktivität starten",
+        "es": "Iniciar una actividad Harmony"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Starts the activity and waits for the hub to switch every device on.",
+        "fr": "Lance l'activité et attend que le hub ait allumé chaque appareil.",
+        "de": "Startet die Aktivität und wartet, bis der Hub jedes Gerät eingeschaltet hat.",
+        "es": "Inicia la actividad y espera a que el hub encienda cada dispositivo."
+      },
+      "timeout_seconds": 90,
+      "fields": [
+        {
+          "key": "activity",
+          "type": "select",
+          "source": "devices",
+          "required": true,
+          "label": {
+            "en": "Activity",
+            "fr": "Activité",
+            "de": "Aktivität",
+            "es": "Actividad"
+          },
+          "description": {
+            "en": "An activity device of the hub (Discover tab).",
+            "fr": "Un appareil activité du hub (onglet Découverte).",
+            "de": "Ein Aktivitätsgerät des Hubs (Tab „Entdecken“).",
+            "es": "Un dispositivo de actividad del hub (pestaña Descubrir)."
+          }
+        }
+      ]
+    },
+    {
+      "key": "power_off",
+      "label": {
+        "en": "Turn everything off (Harmony)",
+        "fr": "Tout éteindre (Harmony)",
+        "de": "Alles ausschalten (Harmony)",
+        "es": "Apagarlo todo (Harmony)"
+      },
+      "description": {
+        "en": "Ends the current activity: the hub turns its devices off.",
+        "fr": "Termine l'activité en cours : le hub éteint ses appareils.",
+        "de": "Beendet die aktuelle Aktivität: Der Hub schaltet seine Geräte aus.",
+        "es": "Termina la actividad actual: el hub apaga sus dispositivos."
+      },
+      "timeout_seconds": 90,
+      "fields": [
+        {
+          "key": "hub",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Hub",
+            "fr": "Hub",
+            "de": "Hub",
+            "es": "Hub"
+          },
+          "description": {
+            "en": "The hub itself, or one of its activities or devices.",
+            "fr": "Le hub lui-même, ou l'une de ses activités ou l'un de ses appareils.",
+            "de": "Der Hub selbst oder eine seiner Aktivitäten oder Geräte.",
+            "es": "El propio hub, o una de sus actividades o dispositivos."
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "key": "send_command",
+      "label": {
+        "en": "Send a Harmony command",
+        "fr": "Envoyer une commande Harmony",
+        "de": "Harmony-Befehl senden",
+        "es": "Enviar un comando Harmony"
+      },
+      "description": {
+        "en": "Sends a remote key to a device driven by the hub, repeated if needed (\"Volume up\" to the amplifier).",
+        "fr": "Envoie une touche à un appareil piloté par le hub, répétée si besoin (« Volume + » à l'ampli).",
+        "de": "Sendet eine Taste an ein vom Hub gesteuertes Gerät, bei Bedarf wiederholt („Lauter“ an den Verstärker).",
+        "es": "Envía una tecla a un dispositivo controlado por el hub, repetida si es necesario («Subir volumen» al amplificador)."
+      },
+      "timeout_seconds": 120,
       "fields": [
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ],
-      "outputs": [
+          "required": true,
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          },
+          "description": {
+            "en": "A device driven by the hub (TV, amplifier...).",
+            "fr": "Un appareil piloté par le hub (TV, ampli…).",
+            "de": "Ein vom Hub gesteuertes Gerät (Fernseher, Verstärker…).",
+            "es": "Un dispositivo controlado por el hub (TV, amplificador…)."
+          }
+        },
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "command",
+          "type": "select",
+          "label": {
+            "en": "Command",
+            "fr": "Commande",
+            "de": "Befehl",
+            "es": "Comando"
+          },
+          "options": [
+            {
+              "value": "PowerToggle",
+              "label": {
+                "en": "Power toggle",
+                "fr": "Marche/arrêt",
+                "de": "Ein/Aus",
+                "es": "Encendido/apagado"
+              }
+            },
+            {
+              "value": "PowerOn",
+              "label": {
+                "en": "Power on",
+                "fr": "Allumer",
+                "de": "Einschalten",
+                "es": "Encender"
+              }
+            },
+            {
+              "value": "PowerOff",
+              "label": {
+                "en": "Power off",
+                "fr": "Éteindre",
+                "de": "Ausschalten",
+                "es": "Apagar"
+              }
+            },
+            {
+              "value": "VolumeUp",
+              "label": {
+                "en": "Volume up",
+                "fr": "Augmenter volume",
+                "de": "Lautstärke höher",
+                "es": "Subir volumen"
+              }
+            },
+            {
+              "value": "VolumeDown",
+              "label": {
+                "en": "Volume down",
+                "fr": "Diminuer volume",
+                "de": "Lautstärke niedriger",
+                "es": "Bajar volumen"
+              }
+            },
+            {
+              "value": "Mute",
+              "label": {
+                "en": "Mute",
+                "fr": "Muet",
+                "de": "Stumm",
+                "es": "Silenciar"
+              }
+            },
+            {
+              "value": "ChannelUp",
+              "label": {
+                "en": "Channel up",
+                "fr": "Chaîne suivante",
+                "de": "Nächster Kanal",
+                "es": "Canal siguiente"
+              }
+            },
+            {
+              "value": "ChannelDown",
+              "label": {
+                "en": "Channel down",
+                "fr": "Chaîne précédente",
+                "de": "Voriger Kanal",
+                "es": "Bajar canal"
+              }
+            },
+            {
+              "value": "DirectionUp",
+              "label": {
+                "en": "Up",
+                "fr": "Haut",
+                "de": "Hoch",
+                "es": "Arriba"
+              }
+            },
+            {
+              "value": "DirectionDown",
+              "label": {
+                "en": "Down",
+                "fr": "Bas",
+                "de": "Runter",
+                "es": "Abajo"
+              }
+            },
+            {
+              "value": "DirectionLeft",
+              "label": {
+                "en": "Left",
+                "fr": "Gauche",
+                "de": "Links",
+                "es": "Izquierda"
+              }
+            },
+            {
+              "value": "DirectionRight",
+              "label": {
+                "en": "Right",
+                "fr": "Droite",
+                "de": "Rechts",
+                "es": "Derecha"
+              }
+            },
+            {
+              "value": "Select",
+              "label": {
+                "en": "OK",
+                "fr": "OK",
+                "de": "OK",
+                "es": "Aceptar"
+              }
+            },
+            {
+              "value": "Menu",
+              "label": {
+                "en": "Menu",
+                "fr": "Menu",
+                "de": "Menü",
+                "es": "Menú"
+              }
+            },
+            {
+              "value": "Home",
+              "label": {
+                "en": "Home",
+                "fr": "Accueil",
+                "de": "Startseite",
+                "es": "Inicio"
+              }
+            },
+            {
+              "value": "Back",
+              "label": {
+                "en": "Back",
+                "fr": "Retour",
+                "de": "Zurück",
+                "es": "Volver"
+              }
+            },
+            {
+              "value": "Exit",
+              "label": {
+                "en": "Exit",
+                "fr": "Quitter",
+                "de": "Beenden",
+                "es": "Salir"
+              }
+            },
+            {
+              "value": "Info",
+              "label": {
+                "en": "Info",
+                "fr": "Info",
+                "de": "Info",
+                "es": "Información"
+              }
+            },
+            {
+              "value": "Guide",
+              "label": {
+                "en": "Guide",
+                "fr": "Guide",
+                "de": "Programm",
+                "es": "Guía"
+              }
+            },
+            {
+              "value": "Play",
+              "label": {
+                "en": "Play",
+                "fr": "Lecture",
+                "de": "Abspielen",
+                "es": "Reproducir"
+              }
+            },
+            {
+              "value": "Pause",
+              "label": {
+                "en": "Pause",
+                "fr": "Pause",
+                "de": "Pause",
+                "es": "Pausar"
+              }
+            },
+            {
+              "value": "Stop",
+              "label": {
+                "en": "Stop",
+                "fr": "Stop",
+                "de": "Stopp",
+                "es": "Detener"
+              }
+            },
+            {
+              "value": "Rewind",
+              "label": {
+                "en": "Rewind",
+                "fr": "Retour rapide",
+                "de": "Zurückspulen",
+                "es": "Retroceder"
+              }
+            },
+            {
+              "value": "FastForward",
+              "label": {
+                "en": "Fast forward",
+                "fr": "Avance rapide",
+                "de": "Vorspulen",
+                "es": "Avanzar"
+              }
+            },
+            {
+              "value": "SkipBack",
+              "label": {
+                "en": "Previous",
+                "fr": "Précédent",
+                "de": "Vorheriger Titel",
+                "es": "Anterior"
+              }
+            },
+            {
+              "value": "SkipForward",
+              "label": {
+                "en": "Next",
+                "fr": "Suivant",
+                "de": "Nächster Titel",
+                "es": "Siguiente"
+              }
+            },
+            {
+              "value": "Record",
+              "label": {
+                "en": "Record",
+                "fr": "Enregistrer",
+                "de": "Aufnehmen",
+                "es": "Grabar"
+              }
+            }
+          ]
+        },
+        {
+          "key": "custom_command",
+          "type": "string",
+          "label": {
+            "en": "Other command",
+            "fr": "Autre commande",
+            "de": "Anderer Befehl",
+            "es": "Otro comando"
+          },
+          "description": {
+            "en": "Instead of the list: the name of any command of the device (see its Command list).",
+            "fr": "À la place de la liste : le nom de n'importe quelle commande de l'appareil (voir sa liste Commande).",
+            "de": "Statt der Liste: der Name eines beliebigen Befehls des Geräts (siehe seine Liste „Befehl“).",
+            "es": "En lugar de la lista: el nombre de cualquier comando del dispositivo (vea su lista Comando)."
+          },
+          "placeholder": {
+            "en": "e.g. InputHdmi1",
+            "fr": "ex. InputHdmi1",
+            "de": "z. B. InputHdmi1",
+            "es": "p. ej. InputHdmi1"
+          }
+        },
+        {
+          "key": "repeat",
+          "type": "number",
+          "min": 1,
+          "max": 20,
+          "default": 1,
+          "label": {
+            "en": "Repeat",
+            "fr": "Répétitions",
+            "de": "Wiederholungen",
+            "es": "Repeticiones"
+          }
+        },
+        {
+          "key": "delay_ms",
+          "type": "number",
+          "min": 0,
+          "max": 5000,
+          "default": 400,
+          "label": {
+            "en": "Delay between repeats (ms)",
+            "fr": "Délai entre répétitions (ms)",
+            "de": "Pause zwischen Wiederholungen (ms)",
+            "es": "Pausa entre repeticiones (ms)"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "harmony",
+      "label": {
+        "en": "Harmony remote",
+        "fr": "Télécommande Harmony",
+        "de": "Harmony-Fernbedienung",
+        "es": "Mando Harmony"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Current activity, one-tap buttons for your favourite activities and Off.",
+        "fr": "Activité en cours, boutons des activités favorites et Éteindre.",
+        "de": "Aktuelle Aktivität, Tasten für deine Lieblingsaktivitäten und Aus.",
+        "es": "Actividad actual, botones de sus actividades favoritas y Apagar."
+      },
+      "icon": "tv",
+      "settings": [
+        {
+          "key": "hub",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Hub",
+            "fr": "Hub",
+            "de": "Hub",
+            "es": "Hub"
+          },
+          "description": {
+            "en": "Empty: the first hub.",
+            "fr": "Vide : le premier hub.",
+            "de": "Leer: der erste Hub.",
+            "es": "Vacío: el primer hub."
+          }
+        },
+        {
+          "key": "activities",
+          "type": "multi_select",
+          "source": "devices",
+          "label": {
+            "en": "Favourite activities",
+            "fr": "Activités favorites",
+            "de": "Lieblingsaktivitäten",
+            "es": "Actividades favoritas"
+          },
+          "description": {
+            "en": "Up to 3 activity devices. Empty: the first activities of the hub.",
+            "fr": "Jusqu'à 3 appareils activité. Vide : les premières activités du hub.",
+            "de": "Bis zu 3 Aktivitätsgeräte. Leer: die ersten Aktivitäten des Hubs.",
+            "es": "Hasta 3 dispositivos de actividad. Vacío: las primeras actividades del hub."
+          }
+        }
+      ],
+      "action_timeout_seconds": 30
     }
   ]
 }

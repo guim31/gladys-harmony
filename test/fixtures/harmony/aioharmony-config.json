@@ -1,0 +1,43 @@
+{
+  "activity": [
+    {
+      "id": "1",
+      "label": "Watch TV"
+    },
+    {
+      "id": "2",
+      "label": "Listen Music"
+    }
+  ],
+  "device": [
+    {
+      "id": "100",
+      "label": "TV",
+      "controlGroup": [
+        {
+          "function": [
+            {
+              "action": "{\"command\": \"PowerToggle\"}"
+            },
+            {
+              "action": "{\"command\": \"VolumeUp\"}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "200",
+      "label": "AVR",
+      "controlGroup": [
+        {
+          "function": [
+            {
+              "action": "null"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
